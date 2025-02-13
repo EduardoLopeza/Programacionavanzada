@@ -1,0 +1,94 @@
+#biblioteca
+class Material:
+    def __init__(self, titulo, estado="disponible"):
+        self.titulo = titulo
+        self.estado = estado
+
+class Libro(Material):
+    def __init__(self, titulo, autor, genero, estado="disponible"):
+        super().__init__(titulo, estado)
+        self.autor = autor
+        self.genero = genero
+
+class Revista(Material):
+    def __init__(self, titulo, edicion, periodicidad, estado="disponible"):
+        super().__init__(titulo, estado)
+        self.edicion = edicion
+        self.periodicidad = periodicidad
+
+class MaterialDigital(Material):
+    def __init__(self, titulo, tipo_archivo, enlace, estado="disponible"):
+        super().__init__(titulo, estado)
+        self.tipo_archivo = tipo_archivo
+        self.enlace = enlace
+
+class Persona:
+    def __init__(self, nombre):
+        self.nombre = nombre
+
+class Usuario(Persona):
+    def __init__(self, nombre):
+        super().__init__(nombre)
+        self.prestamos = []
+    
+    def tomar_prestado(self, material):
+        if material.estado == "disponible":
+            self.prestamos.append(material)
+            material.estado = "prestado"
+            print(f"{self.nombre} ha tomado prestado el libro'{material.titulo}'.")
+        else:
+            print(f"'{material.titulo}' no está disponible.")
+
+class Bibliotecario(Persona):
+    def __init__(self, nombre):
+        super().__init__(nombre)
+    
+    def gestionar_prestamo(self, usuario, material):
+        usuario.tomar_prestado(material)
+
+class Sucursal:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.catalogo = []
+
+    def agregar_material(self, material):
+        self.catalogo.append(material)
+
+    def buscar_material(self, titulo):
+        for material in self.catalogo:
+            if material.titulo.lower() == titulo.lower():
+                return material
+        return None
+
+class Prestamo:
+    def __init__(self, usuario, material, fecha_prestamo, fecha_devolucion):
+        self.usuario = usuario
+        self.material = material
+        self.fecha_prestamo = fecha_prestamo
+        self.fecha_devolucion = fecha_devolucion
+
+class Penalizacion:
+    def __init__(self, usuario, monto):
+        self.usuario = usuario
+        self.monto = monto
+
+class Catalogo:
+    def __init__(self):
+        self.materiales = []
+    
+    def agregar_material(self, material):
+        self.materiales.append(material)
+    
+    def buscar_por_autor(self, autor):
+        return [m for m in self.materiales if isinstance(m, Libro) and m.autor == autor]
+    
+sucursal1 = Sucursal("Biblioteca Central")
+libro1 = Libro("1984", "George Orwell", "Ficción")
+revista1 = Revista("National Geographic", "2023-01", "Mensual")
+usuario1 = Usuario("Juan Pérez")
+bibliotecario1 = Bibliotecario("Ana López")
+
+sucursal1.agregar_material(libro1)
+sucursal1.agregar_material(revista1)
+
+bibliotecario1.gestionar_prestamo(usuario1, libro1)
