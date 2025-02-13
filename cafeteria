@@ -1,0 +1,95 @@
+class Persona:
+    def __init__(self, nombre):
+        self.nombre = nombre
+
+class Cliente(Persona):
+    def __init__(self, nombre):
+        super().__init__(nombre)
+        self.historial_pedidos = []
+
+    def realizar_pedido(self, pedido):
+        self.historial_pedidos.append(pedido)
+        print(f"{self.nombre} ha realizado un pedido: {pedido}")
+
+class Empleado(Persona):
+    def __init__(self, nombre, rol):
+        super().__init__(nombre)
+        self.rol = rol
+
+    def actualizar_inventario(self, inventario, ingrediente, cantidad):
+        inventario.actualizar_stock(ingrediente, cantidad)
+
+class ProductoBase:
+    def __init__(self, nombre, precio):
+        self.nombre = nombre
+        self.precio = precio
+
+class Bebida(ProductoBase):
+    def __init__(self, nombre, precio, tamano, tipo, opciones):
+        super().__init__(nombre, precio)
+        self.tamano = tamano
+        self.tipo = tipo
+        self.opciones = opciones
+
+class Postre(ProductoBase):
+    def __init__(self, nombre, precio, es_vegano, sin_gluten):
+        super().__init__(nombre, precio)
+        self.es_vegano = es_vegano
+        self.sin_gluten = sin_gluten
+
+class Inventario:
+    def __init__(self):
+        self.stock = {}
+
+    def actualizar_stock(self, ingrediente, cantidad):
+        self.stock[ingrediente] = self.stock.get(ingrediente, 0) + cantidad
+        print(f"Inventario actualizado: {ingrediente} - {self.stock[ingrediente]}")
+
+    def verificar_stock(self, ingredientes):
+        for ingrediente, cantidad in ingredientes.items():
+            if self.stock.get(ingrediente, 0) < cantidad:
+                print(f"No hay suficiente {ingrediente} en stock.")
+                return False
+        return True
+
+class Pedido:
+    def __init__(self, cliente, productos):
+        self.cliente = cliente
+        self.productos = productos
+        self.estado = "Pendiente"
+        self.total = sum(producto.precio for producto in productos)
+
+    def actualizar_estado(self, nuevo_estado):
+        self.estado = nuevo_estado
+        print(f"El pedido de {self.cliente.nombre} ahora está: {self.estado}")
+
+class Promocion:
+    def __init__(self, descripcion, descuento):
+        self.descripcion = descripcion
+        self.descuento = descuento
+
+    def aplicar_descuento(self, pedido):
+        pedido.total -= pedido.total * self.descuento / 100
+        print(f"Se ha aplicado un descuento del {self.descuento}%. Total: {pedido.total}")
+
+inventario = Inventario()
+inventario.actualizar_stock("leche", 10)
+inventario.actualizar_stock("café", 5)
+
+# Crear cliente y empleado
+cliente1 = Cliente("Juan")
+empleado1 = Empleado("María", "Barista")
+
+# Crear bebida y pedido
+bebida1 = Bebida("Café Latte", 3.5, "Grande", "Caliente", {"leche extra": True})
+pedido1 = Pedido(cliente1, [bebida1])
+
+# Verificar si hay stock suficiente antes de procesar el pedido
+if inventario.verificar_stock({"leche": 1, "café": 1}):
+    cliente1.realizar_pedido(pedido1)
+    pedido1.actualizar_estado("En preparación")
+    pedido1.actualizar_estado("Entregado")
+
+# Aplicar promoción
+promocion1 = Promocion("Descuento del 10%", 10)
+promocion1.aplicar_descuento(pedido1)
